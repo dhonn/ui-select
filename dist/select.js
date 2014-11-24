@@ -1,7 +1,7 @@
 /*!
  * ui-select
  * http://github.com/angular-ui/ui-select
- * Version: 0.8.3 - 2014-10-14T18:22:05.432Z
+ * Version: 0.8.3 - 2014-11-24T19:03:32.564Z
  * License: MIT
  */
 
@@ -257,8 +257,11 @@
           } else {
             if (ctrl.multiple){
               //Remove already selected items (ex: while searching)
-              var filteredItems = items.filter(function(i) {return ctrl.selected.indexOf(i) < 0;});
-              setItemsFn(filteredItems);
+              if (ctrl.selected === undefined || ctrl.selected === null) {
+              } else {
+                var filteredItems = items.filter(function(i) {return ctrl.selected.indexOf(i) < 0;});
+                setItemsFn(filteredItems);
+              }
             }else{
               setItemsFn(items);              
             }
@@ -272,7 +275,10 @@
       if (ctrl.multiple){
         //Remove already selected items 
         $scope.$watchCollection('$select.selected', function(selectedItems){
-          var data = ctrl.parserResult.source($scope);
+          if(selectedItems === undefined || selectedItems === null) {
+            return;
+          }
+           var data = ctrl.parserResult.source($scope);
           if (!selectedItems.length) {
             setItemsFn(data);            
           }else{
@@ -391,6 +397,7 @@
     };
 
     ctrl.getPlaceholder = function(){
+      if(!ctrl.selected) return;
       //Refactor single?
       if(ctrl.multiple && ctrl.selected.length) return;
       return ctrl.placeholder;
@@ -776,6 +783,7 @@
               ngModel.$modelValue = null; //Force scope model value and ngModel value to be out of sync to re-run formatters
           });
           scope.$watchCollection('$select.selected', function() {
+            if ($select.items.length === 0) return; // If async loading prevent execution until items are not fully loaded
             ngModel.$setViewValue(Date.now()); //Set timestamp as a unique string to force changes
           });
           focusser.prop('disabled', true); //Focusser isn't needed if multiple
