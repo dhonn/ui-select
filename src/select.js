@@ -289,8 +289,11 @@
           } else {
             if (ctrl.multiple){
               //Remove already selected items (ex: while searching)
-              var filteredItems = items.filter(function(i) {return ctrl.selected.indexOf(i) < 0;});
-              setItemsFn(filteredItems);
+              if (ctrl.selected === undefined || ctrl.selected === null) {
+              } else {
+                var filteredItems = items.filter(function(i) {return ctrl.selected.indexOf(i) < 0;});
+                setItemsFn(filteredItems);
+              }
             }else{
               setItemsFn(items);
             }
@@ -304,6 +307,9 @@
       if (ctrl.multiple){
         //Remove already selected items
         $scope.$watchCollection('$select.selected', function(selectedItems){
+          if(selectedItems === undefined || selectedItems === null) {
+            return;
+          }
           var data = ctrl.parserResult.source($scope);
           if (!selectedItems.length) {
             setItemsFn(data);
@@ -1295,14 +1301,14 @@
             throw uiSelectMinErr('rows', "Expected 1 .ui-select-choices-row but got '{0}'.", choices.length);
           }
 
-          choices.attr('ng-repeat', RepeatParser.getNgRepeatExpression($select.parserResult.itemName, '$select.items', $select.parserResult.trackByExp, groupByExp))
-              .attr('ng-if', '$select.open') //Prevent unnecessary watches when dropdown is closed
-              .attr('ng-mouseenter', '$select.setActiveItem('+$select.parserResult.itemName +')')
-              .attr('ng-click', '$select.select(' + $select.parserResult.itemName + ',false,$event)');
+          choices.attr('ng-repeat', RepeatParser.getNgRepeatExpression($select.parserResult.itemName, '$select.items', $select.parserResult.trackByExp, groupByExp));
 
           var rowsInner = element.querySelectorAll('.ui-select-choices-row-inner');
           if (rowsInner.length !== 1) throw uiSelectMinErr('rows', "Expected 1 .ui-select-choices-row-inner but got '{0}'.", rowsInner.length);
-          rowsInner.attr('uis-transclude-append', ''); //Adding uisTranscludeAppend directive to row element after choices element has ngRepeat
+          rowsInner.attr('uis-transclude-append', '') //Adding uisTranscludeAppend directive to row element after choices element has ngRepeat
+              .attr('ng-if', '$select.open') //Prevent unnecessary watches when dropdown is closed
+              .attr('ng-mouseenter', '$select.setActiveItem('+$select.parserResult.itemName +')')
+              .attr('ng-click', '$select.select(' + $select.parserResult.itemName + ',false,$event)');
 
           $compile(element, transcludeFn)(scope); //Passing current transcludeFn to be able to append elements correctly from uisTranscludeAppend
 
