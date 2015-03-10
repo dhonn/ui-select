@@ -9,5 +9,8 @@
          placeholder="{{$select.placeholder}}"
          ng-model="$select.search"
          ng-show="$select.searchEnabled && $select.open">
+  <span ng-show="$select.searchEnabled && $select.open && !$select.isEmpty()" class="btn btn-xs btn-link pull-right" style="margin-right: 6px;margin-top:-26px" ng-click="$select.selected=undefined;">
+    <i class="glyphicon glyphicon-remove" aria-hidden="true"></i>
+  </span>
   <div class="ui-select-choices"></div>
 </div>
